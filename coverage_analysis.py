@@ -7,24 +7,18 @@ from coverage.parser import CodeParser
 from operator import itemgetter
 
 
-# Your path from cwd to package (like /astropy)
-my_path = '/astropy'
-
+# Path of package
 cwd = os.getcwd()
-package_path = cwd + my_path
-# For path of file in package
-cut = len(package_path) + 1
+cut = len(cwd) + 1
 
 # Get list of measured files
 d = coverage.CoverageData()
-d.read_file(package_path + '/.coverage')
+d.read_file(cwd + '/.coverage')
 measured_files = d.measured_files()
 # Sort them alphabetically
 measured_files.sort()
 
-print len(measured_files), 'measured files in package!'
-
-
+### Defintions
 # Give subpack name from path
 def subpack(path):
     start = path.index('/') + 1
@@ -198,6 +192,8 @@ def function_coverage(executable, executed, func_start, func_end):
     
     return stat_l, miss_l
     
+
+### Make files    
 file_coverage = open('file_coverage.txt', 'w')
 subpack_coverage = open('subpack_coverage.txt', 'w')
 func_coverage = open('func_coverage.txt', 'w')
@@ -363,13 +359,13 @@ subpack_coverage.close()
 func_coverage.close()
 worst_func.close()
 
-print 'Finished'
-Finished
+print "\n    Created 'file_coverage.txt'"
+print "    Created 'func_coverage.txt'"
+print "    Created 'worst_functions.txt'"
+print "    Created 'subpack_coverage.txt'"
 
-Plots
-In [149]:
-save = False
 
+### Plot function coverage
 # Limits
 xmax = np.amax(np.array(total_func_lines)) * 1.1
 xmin = -10.
@@ -398,10 +394,13 @@ plt.ylim(ymin,ymax)
 plt.legend(loc=2)
 
 # Saving plot
-if save:
-    plt.savefig('function_coverage.pdf')
+plt.savefig('function_coverage.pdf')
+print "    Created 'function_coverage.pdf'\n"
 
 per = str(int(worst/number_of_functions * 100))
 worst = int(worst)
 number = int(number_of_functions)
-print 'There are', worst, 'from', number, '(' + per + '%) functions with at least 10 lines and less than 50% coverage!'
+
+print '   ', len(measured_files), 'measured files'
+print '   ', number, 'functions [' + str(worst) + '(' + per + '%) have bad coverage -> worst_functions.txt]'
+print ''
